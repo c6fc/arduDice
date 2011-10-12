@@ -1,0 +1,112 @@
+const int buttonPin1 = 3; //Switch #1 on the DIP switch is digital pin
+3 on Arduino.
+const int buttonPin2 = 4; //Switch #2 on the DIP switch is digital pin
+4 on Arduino.
+const int buttonPin3 = 5; //Switch #3 on the DIP switch is digital pin
+5 on Arduino.
+const int buttonPin4 = 6; //Switch #4 on the DIP switch is digital pin
+6 on Arduino.
+const int buttonPin5 = 7; //Switch #5 on the DIP switch is digital pin
+7 on Arduino.
+const int buttonPin6 = 8; //Switch #6 on the DIP switch is digital pin
+8 on Arduino.
+const int buttonPin7 = 9; //Switch #7 on the DIP switch is digital pin
+9 on Arduino.
+const int accel = 1; //Accelerometer's Y axis is anolog pin 1 on Arduino
+
+int highnum = 0; //Variable to denote the high value for the RNG
+
+long ran; //Variable to store random number in
+
+void setup() {
+ pinMode(accel, INPUT); // Sets analog pin 1 to input.
+ pinMode(buttonPin1, INPUT); // Sets digital pin 3 to input.
+ pinMode(buttonPin2, INPUT); // Sets digital pin 4 to input.
+ pinMode(buttonPin3, INPUT); // Sets digital pin 5 to input.
+ pinMode(buttonPin4, INPUT); // Sets digital pin 6 to input.
+ pinMode(buttonPin5, INPUT); // Sets digital pin 7 to input.
+ pinMode(buttonPin6, INPUT); // Sets digital pin 8 to input.
+ pinMode(buttonPin7, INPUT); // Sets digital pin 9 to input.
+ digitalWrite(buttonPin1, HIGH); // Sets digital pin 3 HIGH.
+ digitalWrite(buttonPin2, HIGH); // Sets digital pin 4 HIGH.
+ digitalWrite(buttonPin3, HIGH); // Sets digital pin 5 HIGH.
+ digitalWrite(buttonPin4, HIGH); // Sets digital pin 6 HIGH.
+ digitalWrite(buttonPin5, HIGH); // Sets digital pin 7 HIGH.
+ digitalWrite(buttonPin6, HIGH); // Sets digital pin 8 HIGH.
+ digitalWrite(buttonPin7, HIGH); // Sets digital pin 9 HIGH.
+
+
+Serial.begin(9600); //Starts at 9600 baud rate.
+
+
+randomSeed(analogRead(0)); //Seed for random number generator using
+value of unused analog pin.
+
+Serial.print("v"); //Resets the display
+Serial.print(0x7A, BYTE); //Send brightness command to the display
+Serial.print(0x00, BYTE); //Send brightest command to the display
+
+
+
+delay(100); //Wait 1 second.
+Serial.print("d8d"); //Send "d8d" to the display.
+
+}
+
+void loop() {
+
+
+
+   if (analogRead(accel) > 400) {
+      for (int num = 0; num <= 100; num++) {
+          if (analogRead(accel) < 300) {
+              trigger(); //If the Y axis on accelerometer reads
+greater then 400, then lesser then 300, call trigger function.
+          }
+      }
+  }
+}
+
+void trigger() {
+
+
+  if (digitalRead(buttonPin1) == LOW) {
+      highnum = 5; //If switch #1 is flipped on, random 1-4.
+  } else if (digitalRead(buttonPin2) == LOW) {
+      highnum = 7; //If switch #2 is flipped on, random 1-6.
+  } else if (digitalRead(buttonPin3) == LOW) {
+      highnum = 9; //If switch #3 is flipped on, random 1-8.
+  } else if (digitalRead(buttonPin4) == LOW) {
+      highnum = 11; //If switch #4 is flipped on, random 1-10.
+  } else if (digitalRead(buttonPin5) == LOW) {
+      highnum = 13; //If switch #5 is flipped on, random 1-12.
+  } else if (digitalRead(buttonPin6) == LOW) {
+      highnum = 21; //If switch #6 is flipped on, random 1-20.
+  } else if (digitalRead(buttonPin7) == LOW) {
+      highnum = 100; //If switch #6 is flipped on, random 1-100.
+  } else {
+      highnum = 1;
+  }
+
+  if (highnum > 1)
+
+  {
+      for (int num = 0; num <= 5; num++) {
+          Serial.print("v"); //Resets display.
+          ran = random(1, highnum);
+          if (ran < 10) {
+              Serial.print("0");
+          }
+          delay(100); //Wait 1 second
+
+          Serial.print(ran); //Send value of ran to display
+      }
+  } else {
+
+      Serial.print("v"); //Resets display.
+      Serial.print("DURR"); //If no switches are on, send "DURR" to
+the display.
+  }
+
+  delay(1000); //Wait 10 seconds.
+}
